@@ -29,4 +29,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 
 const app = new Vue({
     el: '#app',
+    mounted: function() {
+        $('[data-toggle="tooltip"]').tooltip();
+    }
 });

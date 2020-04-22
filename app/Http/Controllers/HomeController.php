@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Answer;
+use App\Question;
+use App\User;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,6 +26,19 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $message = request()->session()->has('message')
+            ? request()->session()->get('message')
+            : null;
+
+        $questions = Question::ownQuestions()->get();
+
+        return view('home', [
+            'questions' => $questions,
+            'message' => $message,
+        ]);
     }
+
+
+
+
 }

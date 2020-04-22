@@ -16,7 +16,7 @@ class CreateAnswerUserTable extends Migration
         Schema::create('answer_user', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('answer_id');
-            $table->boolean('answered_right')->default(false);
+            $table->boolean('answered')->default(false);
             $table->timestamps();
 
             $table->unique(['user_id', 'answer_id']);

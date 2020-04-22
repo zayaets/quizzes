@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Policies\QuestionPolicy;
+use App\Question;
+use App\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -14,6 +17,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Model' => 'App\Policies\ModelPolicy',
+        Question::class => QuestionPolicy::class,
     ];
 
     /**
@@ -25,6 +29,39 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        // don't allow to answer own questions
+
+        Gate::define('can-answer', function($user, Question $question) {
+            if ($user->id === $question->user_id) {
+                return false;
+            }
+            return true;
+        });
+
+
+        // allow edit only own questions
+        /*
+        Gate::define('can-edit', function($user, Question $question) {
+//            $answers = $question->answers;
+
+            if ($user->id === $question->user_id ) {
+                return true;
+            }
+            return false;
+        });
+        */
+
+
+        // if question belongs to the current user
+        /*
+        Gate::define('can-create-answers', function ($user, Question $question) {
+            if ($user->id === $question->user_id) {
+                return true;
+            }
+            return false;
+        });
+        */
+
+
     }
 }
