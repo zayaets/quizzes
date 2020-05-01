@@ -4,8 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Answer;
 use App\Question;
+use App\Role;
 use App\User;
+use DebugBar\DebugBar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 class QuestionController extends Controller
 {
@@ -38,6 +44,62 @@ class QuestionController extends Controller
     {
 
 
+        /*
+        if (Gate::allows('create-question')) {
+            dd('allows create');
+        }
+        */
+
+        /*
+        $que = Question::find(1);
+
+        if (Gate::allows('update-question', $que)) {
+            dd('user can update question');
+        }
+
+        if (Gate::denies('update-question', $que)) {
+            dd('user cannot update question');
+        }
+        */
+
+        /*
+        $user = User::find(2);
+        $que = Question::find(1);
+
+        if (Gate::forUser($user)->allows('update-question', $que)) {
+            dd('user can update question');
+        }
+
+        if (Gate::forUser($user)->denies('update-question', $que)) {
+            dd('user cannot update question');
+        }
+        */
+
+        /*
+        $que = Question::find(1);
+
+        if (Gate::any(['update-question', 'delete-question'], $que)) {
+            dd('User can update or delete question');
+        }
+        */
+
+        /*
+        $que = Question::find(1);
+
+        if (Gate::none(['update-question', 'delete-question'], $que)) {
+            dd('User cannot update or delete question');
+        }
+        */
+
+        /*
+        $que = Question::find(1);
+        Gate::authorize('update-question', $que);
+        */
+
+
+//        dd(Auth::user());
+
+
         return view('questions.create');
     }
 
@@ -50,14 +112,16 @@ class QuestionController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'text' => 'required',
-            'submit' => 'required'
+            'title' => 'required|max:191',
+            'text' => 'required|max:65000',
+            'submit' => 'required',
         ]);
 
 //        dd($data);
 
         $question = new Question;
 //        $question->fill($data);
+        $question->title = $data['title'];
         $question->text = $data['text'];
         $question->owner()->associate(auth()->id());
         $question->save();
@@ -65,7 +129,6 @@ class QuestionController extends Controller
         // params
         $q_id = $question->id;
         $back = 'home';
-//
 
         if ($data['submit'] === 'Save and Close') {
             $request->session()->flash('message', 'Question saved successfully. In order to publish question you need to add answers.');
@@ -92,34 +155,8 @@ class QuestionController extends Controller
             ? request()->session()->get('message')
             : null;
 
-        /*if ($message) {
-            echo $message;
-        }*/
+//        dd($question->isValid());
 
-
-
-
-//        dd($question->beenAnswered);
-//        dd(Question::find(1)->beenAnswered);
-//        dd($question->loadCount('answers'));
-
-        /*
-        $question = Question::find(1);
-        foreach ($question->answers as $answer) {
-            echo $answer->answeredCorrect ? 'correct' .  '<br>' : 'wrong' .  '<br>';
-        }
-//        $answer = Answer::find(3)->answeredCorrect;
-        dd(111);
-        */
-
-//        dd(Question::find(2)->answeredCorrect);
-
-
-//        dd(Question::find($question->id)->answered);
-
-//        dd(Answer::find(1)->answeredByExists);
-
-        /***********************/
 
         return view('questions.show', [
             'question' => $question,

@@ -18,16 +18,15 @@
                             @foreach($questions as $question)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('questions.show', ['question' => $question->id]) }}" class="
-                                            {{--{{ (in_array($question->id, $answered_questions)) ? 'btn-outline-secondary' : ''}}--}}
-                                            @if($question->answered)
-                                                @if($question->answeredCorrect)
-                                                    btn-outline-success
-                                                @else
-                                                    btn-outline-danger
-                                                @endif
+                                        <a href="{{ route('questions.show', ['question' => $question->id]) }}">{{ $question->title }}</a>
+                                        @if($question->answered)
+                                            @if($question->answeredCorrect)
+                                                <span class="badge badge-pill badge-success">Correct</span>
+                                            @else
+                                                <span class="badge badge-pill badge-danger">Incorrect</span>
                                             @endif
-                                            ">{{ $question->title }}</a>
+                                        @endif
+
                                         <p>{{ \Illuminate\Support\Str::limit($question->text, 50, ' (...)') }}</p>
                                     </td>
                                     <td><a href="{{ route('users.show', ['user' => $question->owner->id]) }}">{{ $question->owner->name }}</a></td>

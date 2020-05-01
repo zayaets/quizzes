@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card mx-auto" style="width: 18rem; ">
-                    <img src="{{ asset('storage//images/pig.jpg') }}" class="card-img-top img-thumbnail" alt="Avatar">
+                    <img src="{{ asset('storage/images/pig.jpg') }}" class="card-img-top img-thumbnail" alt="Avatar">
                     <div class="card-header text-center">
                         <h4>{{ $user->name }}</h4>
                     </div>

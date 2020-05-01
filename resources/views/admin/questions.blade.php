@@ -25,10 +25,11 @@
                             <table class="table">
                                 <thead class="thead-light">
                                 <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">Text</th>
-                                    <th scope="col">Published</th>
-                                    <th scope="col">User</th>
+                                    <th scope="col">@sortablelink('id', 'ID')</th>
+                                    <th scope="col">@sortablelink('title', 'Title')</th>
+                                    <th scope="col">@sortablelink('text', 'Text')</th>
+                                    <th scope="col">@sortablelink('published', 'Published')</th>
+                                    <th scope="col">@sortablelink('user_id', 'User')</th>
                                     <th scope="col"></th>
                                     <th scope="col"></th>
                                 </tr>
@@ -37,7 +38,10 @@
                                 @foreach($questions as $question)
                                     <tr>
                                         <th scope="row">{{ $question->id }}</th>
-                                        <td>{{ $question->text }}</td>
+                                        <td>{{ $question->title }}</td>
+                                        <td>
+                                            {{ \Illuminate\Support\Str::limit($question->text, 50, ' (...)') }}
+                                        </td>
                                         <td>{{ $question->published }}</td>
                                         <td>{{ $question->owner->name }}</td>
                                         <td>

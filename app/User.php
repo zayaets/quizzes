@@ -50,6 +50,12 @@ class User extends Authenticatable
         return $this->hasMany(Question::class);
     }
 
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+    }
+
     /**
      * This method will return all answered Answers
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -59,6 +65,33 @@ class User extends Authenticatable
         return $this->belongsToMany(Answer::class, 'answer_user', 'user_id', 'answer_id')
             ->withTimestamps();
 //            ->withPivot(['user_id', 'answer_id', 'answered', 'created_at', 'updated_at']);
+    }
+
+
+    public function hasAccess(array $permissions) : bool
+    {
+        foreach ($this->roles as $role) {
+            if ($role->hasAccess($permissions)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function inRole(string $roleSlug)
+    {
+        return $this->roles()->where('slug', $roleSlug)->count() == 1;
+    }
+
+
+    public function hello()
+    {
+        return "hello $this->name";
+    }
+
+    public function isAdmin()
+    {
+        return true;
     }
 
 

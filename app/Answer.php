@@ -33,6 +33,11 @@ class Answer extends Model
         return $this->answeredBy()->where('id', auth()->id())->exists();
     }
 
+    /**
+     * if Question has been once answered by someone
+     *
+     * @return bool
+     */
     public function getAnsweredByAnyExistsAttribute()
     {
         return $this->answeredBy()->exists();
@@ -48,9 +53,27 @@ class Answer extends Model
         return $this->is_correct === $this->answeredByExists;
     }
 
+
+    /**
+     * 0 - wrong
+     * 1 - right
+     * 2 - unanswered
+     * @return mixed
+     */
     public function getAnsweredValueAttribute()
     {
-        return $this->is_correct;
+//        return $this->answeredByExists;
+//        return $this->is_correct;
+
+
+        // answer is correct and user checked
+        if ($this->is_correct === true && $this->is_correct === $this->answeredByExists) {
+            return 1;
+            // answer is incorrect and user didn't check
+        } elseif ($this->is_correct != $this->answeredByExists) {
+            return 0;
+        }
+        return 2;
     }
 
     /*public function scopeAnsweredByExists($query, $a_id)

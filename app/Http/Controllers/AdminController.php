@@ -32,7 +32,7 @@ class AdminController extends Controller
 
     public function publish(Question $question)
     {
-        if ($question->hasAnswers) {
+        if ($question->isValid()) {
             $question->published = 1;
             $question->save();
 

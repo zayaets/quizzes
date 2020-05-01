@@ -29,14 +29,31 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        $this->registerQuestionPolicies();
+
+
+        /*Gate::define('create-question', function ($user) {
+            return $user->hasAcces();
+        });
+
+        Gate::define('update-question', function ($user, Question $question) {
+            return false;
+//            return $user->id === $question->user_id;
+        });
+
+        Gate::define('delete-question', function ($user, Question $question) {
+            return false;
+//            return $user->id === $question->user_id;
+        });*/
+
         // don't allow to answer own questions
 
-        Gate::define('can-answer', function($user, Question $question) {
+        /*Gate::define('can-answer', function($user, Question $question) {
             if ($user->id === $question->user_id) {
                 return false;
             }
             return true;
-        });
+        });*/
 
 
         // allow edit only own questions
@@ -63,5 +80,12 @@ class AuthServiceProvider extends ServiceProvider
         */
 
 
+    }
+
+    public function registerQuestionPolicies()
+    {
+        Gate::define('create-question', function ($user) {
+            return auth()->id() === $user->id && $user->hasAccess(['create-question']);
+        });
     }
 }

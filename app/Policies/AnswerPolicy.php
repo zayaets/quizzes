@@ -42,7 +42,7 @@ class AnswerPolicy
      */
     public function create(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -54,7 +54,7 @@ class AnswerPolicy
      */
     public function update(User $user, Answer $answer)
     {
-        return $answer->question->user_id === Auth::id() && !$answer->answeredByAnyExists;
+        return $answer->question->user_id === auth()->id() && !$answer->answeredByAnyExists;
     }
 
     /**

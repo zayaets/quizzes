@@ -20,7 +20,7 @@ class Question extends Model
 
 
     public $sortable = [
-        'id', 'text', 'user_id', 'created_at', 'updated_at',
+        'id', 'title', 'text', 'user_id', 'created_at', 'updated_at',
     ];
     public function owner()
     {
@@ -58,30 +58,36 @@ class Question extends Model
         return $this->answers()->exists();
     }
 
-    public function getHasAnswersAttribute()
+    /*
+     * !!!
+     * checks if Question is valid/suitable for publishing
+     * if it has:
+     * 0) at least 2 Answers
+     * 1) at least one Answer is correct
+     */
+    public function isValid()
     {
-        $answers_count = $this->loadCount('answers')->answers_count;
+        // count Answers
+        $answers_count = $this->loadCount('answers')->answers_count; //
 
         $answers = $this->answers->map(function ($answer) {
-            if ($answer->is_right === true) {
+            if ($answer->is_correct === true) {
                 return [
-                    'is_right' => 1
+                    'is_correct' => 1
                 ];
             }
         });
 
-        $has_right = 0;
+        $has_correct = 0;
 
         foreach ($answers as $answer) {
-            if ($answer['is_right'] === 1) {
-                $has_right = 1;
+            if ($answer['is_correct'] === 1) {
+                $has_correct = 1;
                 break;
             }
         }
 
-//        return $has_right;
-
-        return ($answers_count >= 2) && $has_right;
+        return ($answers_count >= 2) && $has_correct;
 
     }
 
@@ -138,8 +144,12 @@ class Question extends Model
         }
 
         return false;
+    }
 
 
+    public function hey()
+    {
+        return "blah";
     }
 
 /*    public function scopeAnswered($query, $q_id)

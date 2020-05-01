@@ -31,6 +31,9 @@
                                     </div>
                                 </div>
 
+
+
+
                                 <div class="card mb-3">
                                     <div class="card-body">
                                         <form action="{{ route('answers.answer') }}" method="post">
@@ -51,14 +54,22 @@
                                                         @endif
                                                     >
                                                     <label for="answer-{{ $answer->id }}" class="form-check-label
-                                                        @if($question->answered)
-                                                            @if($answer->answeredCorrect)
-                                                                p-1 bg-success text-light
-                                                            @else
-                                                                p-1 bg-danger text-light
-                                                            @endif
+{{--                                                    @if($question->answered)--}}
+                                                        @if($answer->answeredValue === 1)
+                                                            bg-success border rounded px-1 text-light
+                                                        @elseif($answer->answeredValue === 0)
+                                                            bg-danger border rounded px-1 text-light
+                                                        @elseif($answer->answeredValue === 2)
+                                                            text-secondary
                                                         @endif
-                                                    ">{{ $answer->text }}</label>
+{{--                                                    @endif--}}
+                                                    ">{{ $answer->text }}
+                                                    </label>
+                                                    @if($answer->answeredValue === 1)
+                                                        <span class="badge badge-success">Correct</span>
+                                                    @elseif($answer->answeredValue === 0)
+                                                        <span class="badge badge-danger">Incorrect</span>
+                                                    @endif
                                                 </div>
                                             @endforeach
                                             @can('can-answer', $question)
@@ -83,7 +94,7 @@
                             <tr class="bg-info">
                                 <th>ID</th>
                                 <th>Text</th>
-                                <th>Is Right</th>
+                                <th>Is Correct</th>
                                 <th>Questions ID</th>
                             </tr>
                             </thead>
@@ -92,7 +103,7 @@
                                 <tr>
                                     <td>{{ $answer->id }}</td>
                                     <td>{{ $answer->text }}</td>
-                                    <td>{{ $answer->is_right }}</td>
+                                    <td>{{ $answer->is_correct }}</td>
                                     <td>{{ $answer->question_id }}</td>
                                 </tr>
                             @endforeach
