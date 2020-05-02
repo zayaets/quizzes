@@ -9,9 +9,9 @@
 
 
                     <a href="{{ route('answers.index', ['question' => $question->id]) }}" class="btn btn-info text-light mb-3">View all answers</a>
-                    @if(isset($back))
+                    {{--@if(isset($back))
                         <a href="{{ route($back) }}" class="btn btn-outline-primary mb-3 ml-auto">Dashboard</a>
-                    @endif
+                    @endif--}}
                 </div>
 
                 <div class="card">
@@ -23,9 +23,6 @@
                     </div>
                     <div class="card-body">
 
-                        @if(!empty($message))
-                            <div class="alert alert-success">{{ $message }}</div>
-                        @endif
 
                         {{--@if(count($answers))
                             <div class="row">
@@ -57,9 +54,9 @@
                         @endif--}}
 
 
-                        <form action="{{ route('answers.store') }}" method="POST">
+                        <form action="{{ route('answers.store', ['question' => $question->id]) }}" method="POST">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="question_id" value="{{ $question->id }}">
+                            <input type="hidden" name="question" value="{{ $question->id }}">
 
                             <div class="form-group row">
                                 <label for="text" class="col-sm-2 col-form-label">Answer</label>
@@ -75,9 +72,9 @@
                                 <div class="col-sm-2"></div>
                                 <div class="col-sm-10">
                                     <div class="form-check">
-                                        <input type="hidden" class="form-check-input" name="is_right" value="0">
-                                        <input type="checkbox" class="form-check-input" name="is_right" id="is_right" value="1">
-                                        <label class="form-check-label" for="is_right">
+                                        <input type="hidden" class="form-check-input" name="is_correct" value="0">
+                                        <input type="checkbox" class="form-check-input" name="is_correct" id="is_correct" value="1">
+                                        <label class="form-check-label" for="is_correct">
                                             Is correct answer
                                         </label>
                                     </div>

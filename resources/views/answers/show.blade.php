@@ -9,7 +9,7 @@
                 <div class="card">
                     <div class="card-header d-flex">
                         <span class="my-auto">Answer:</span>
-                        <a href="#" class="btn btn-primary ml-auto"><i class="fas fa-pencil-alt"></i></a>
+                        {{--<a href="#" class="btn btn-primary ml-auto"><i class="fas fa-pencil-alt"></i></a>--}}
 
 {{--                        <div><strong></strong></div>--}}
                     </div>

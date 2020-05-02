@@ -25,7 +25,7 @@ class Role extends Model
         return json_decode($this->permissions, true);
     }
 
-    public function hasAccess(array $permissions) : bool
+    public function hasAccess($permissions)
     {
         foreach ($permissions as $permission) {
             if ($this->hasPermission($permission)) {
@@ -36,7 +36,7 @@ class Role extends Model
 
     }
 
-    private function hasPermission(string $permission) : bool
+    private function hasPermission($permission)
     {
         return $this->permissions[$permission] ?? false;
     }

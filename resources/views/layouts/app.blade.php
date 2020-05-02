@@ -55,10 +55,12 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('admin.index') }}">
-                                        Admin panel
-                                    </a>
+                                    @can('isAdmin')
+                                        <a class="dropdown-item" href="{{ route('admin.index') }}">
+                                            Admin panel
+                                        </a>
                                     <hr>
+                                    @endcan
                                     <a class="dropdown-item" href="{{ route('home') }}">
                                         Dashboard
                                     </a>

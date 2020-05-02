@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <a href="{{ \Illuminate\Support\Facades\URL::previous() }}" class="btn btn-outline-secondary mb-3" title="Back"><i class="fas fa-arrow-left"></i></a>
+                <a href="{{ route('questions.index') }}" class="btn btn-outline-secondary mb-3" title="Back"><i class="fas fa-arrow-left"></i></a>
 
                 @if(isset($question))
                     @if(count($question->answers))
@@ -19,20 +19,25 @@
                                 @endcan
                             </div>
                             <div class="card-body">
-                                @if($errors->any())
-                                    @foreach($errors->all() as $error)
-                                        <div class="alert alert-danger">{{ $error }}</div>
-                                    @endforeach
-                                @endif
-
                                 <div class="card mb-3">
                                     <div class="card-body">
                                         {{ $question->text }}
                                     </div>
                                 </div>
 
+                                @if($errors->any())
+                                    @foreach($errors->all() as $error)
+                                        <div class="alert alert-danger">{{ $error }}</div>
+                                    @endforeach
+                                @endif
 
+                                @if(session('error-message'))
+                                    <div class="alert alert-danger">{{ session('error-message') }}</div>
+                                @endif
 
+                                @if(session('success-message'))
+                                    <div class="alert alert-success">{{ session('success-message') }}</div>
+                                @endif
 
                                 <div class="card mb-3">
                                     <div class="card-body">
@@ -54,25 +59,27 @@
                                                         @endif
                                                     >
                                                     <label for="answer-{{ $answer->id }}" class="form-check-label
-{{--                                                    @if($question->answered)--}}
-                                                        @if($answer->answeredValue === 1)
-                                                            bg-success border rounded px-1 text-light
-                                                        @elseif($answer->answeredValue === 0)
-                                                            bg-danger border rounded px-1 text-light
-                                                        @elseif($answer->answeredValue === 2)
-                                                            text-secondary
+                                                        @if($question->answered)
+                                                            @if($answer->answeredValue === 1)
+                                                                bg-success border rounded px-1 text-light
+                                                            @elseif($answer->answeredValue === 0)
+                                                                bg-danger border rounded px-1 text-light
+                                                            @elseif($answer->answeredValue === 2)
+                                                                text-secondary
+                                                            @endif
                                                         @endif
-{{--                                                    @endif--}}
                                                     ">{{ $answer->text }}
                                                     </label>
-                                                    @if($answer->answeredValue === 1)
-                                                        <span class="badge badge-success">Correct</span>
-                                                    @elseif($answer->answeredValue === 0)
-                                                        <span class="badge badge-danger">Incorrect</span>
+                                                    @if($question->answered)
+                                                        @if($answer->answeredValue === 1)
+{{--                                                            <span class="badge badge-success">Correct</span>--}}
+                                                        @elseif($answer->answeredValue === 0)
+                                                            <span class="badge badge-danger">Incorrect</span>
+                                                        @endif
                                                     @endif
                                                 </div>
                                             @endforeach
-                                            @can('can-answer', $question)
+                                            @can('answer', $question)
                                                 @if(!$question->answered)
                                                     <button type="submit" class="btn btn-primary">Submit</button>
                                                 @endif

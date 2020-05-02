@@ -12,20 +12,21 @@
                         <a href="{{ route('answers.index', ['question' => $question->id]) }}" class="btn btn-info text-light ml-auto">Edit Answers</a>
                     </div>
                     <div class="card-body">
-                        @if(isset($question))
-                            question isset
-                        @endif
 
-                        @if($question->beenAnswered)
-                            <div class="alert alert-danger">
-                                Don't edit Question since it has been answered by users
-                            </div>
-                        @endif
+
 
 
                         <form action="{{ route('questions.update', ['question' => $question->id]) }}" method="POST">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="_method" value="PUT">
+
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" name="title" id="title" class="form-control" value="{{ old('title', $question->title) }}">
+                                @if($errors->has('title'))
+                                    <div class="invalid-feedback d-block">{{ $errors->first('title') }}</div>
+                                @endif
+                            </div>
 
                             <div class="form-group">
                                 <label for="text">Text</label>

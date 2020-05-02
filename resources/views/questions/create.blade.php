@@ -16,9 +16,9 @@
 
                             <div class="form-group">
                                 <label for="title">Title</label>
-                                <input type="text" name="title" id="title" class="form-control">
+                                <input type="text" name="title" id="title" class="form-control" value="{{ old('title', '') }}">
                                 @if($errors->has('title'))
-                                    <div class="invalid-feedback d-block">{{ $errors->first('text') }}</div>
+                                    <div class="invalid-feedback d-block">{{ $errors->first('title') }}</div>
                                 @endif
                             </div>
 

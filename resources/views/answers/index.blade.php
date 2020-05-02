@@ -4,13 +4,29 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8 d-flex">
-                <a href="{{ route('home') }}" class="btn btn-primary mb-3">Dashboard</a>
-                <a href="{{ route('answers.create', ['question' => $question->id]) }}" class="btn btn-primary ml-auto mb-3"><i class="fas fa-plus"></i></a>
+                <a href="{{ route('home') }}" class="btn btn-primary mb-3 ml-auto">Dashboard</a>
             </div>
             <div class="col-md-8">
-                @if(isset($message))
-                    <div class="alert alert-success">{{ $message }}</div>
-                @endif
+                <div class="card mb-2">
+                    <div class="card-header text-center">
+                        <h4>Answers</h4>
+                        <p>Here you can create answers for question</p>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">{{ $question->title }}</h3>
+                        <p class="card-text">{{ $question->text }}</p>
+                    </div>
+                </div>
+
+                @includeIf('templates.session_messages')
+
+                <div class="row">
+                    <div class="col d-flex">
+                        <a href="{{ route('answers.create', ['question' => $question->id]) }}"
+                           class="btn btn-primary mb-3"
+                           data-toggle="tooltip" title="Create answer"><i class="fas fa-plus"></i></a>
+                    </div>
+                </div>
 
                 @if(isset($answers))
                     <table class="table">
@@ -18,7 +34,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Text</th>
-                            <th>Is Right</th>
+                            <th>Is Correct</th>
                             <th>Edit</th>
                             <th>Delete</th>
                             <th>Question ID</th>
@@ -31,16 +47,19 @@
                                 <td>
                                     <a href="{{ route('answers.show', ['answer' => $answer->id]) }}">{{ $answer->text }}</a>
                                 </td>
-                                <td>{{ $answer->is_right }}</td>
+                                <td>{{ $answer->is_correct }}</td>
                                 <td>
-                                    <a href="{{ route('answers.edit', ['answer' => $answer->id]) }}" class="btn btn-info text-light"><i class="fas fa-pencil-alt"></i></a>
+                                    <a href="{{ route('answers.edit', ['answer' => $answer->id, 'question' => $question->id]) }}"
+                                       class="btn btn-info text-light"
+                                       data-toggle="tooltip" title="Edit answer"><i class="fas fa-pencil-alt"></i></a>
                                 </td>
                                 <td>
                                     <form action="{{ route('answers.destroy', ['answer' => $answer->id]) }}" method="post">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <input type="hidden" name="_method" value="DELETE">
 
-                                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+                                        <button type="submit" class="btn btn-danger"
+                                                data-toggle="tooltip" title="Delete answer"><i class="fas fa-trash-alt"></i></button>
                                     </form>
 
                                 </td>

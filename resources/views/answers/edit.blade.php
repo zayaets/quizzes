@@ -13,9 +13,7 @@
                     </div>
                     <div class="card-body">
 
-                        @if(!empty($message))
-                            <div class="alert alert-success">{{ $message }}</div>
-                        @endif
+                        @includeIf('templates.session_messages')
 
                         {{--@if(count($answers))
                             <div class="row">
@@ -66,10 +64,10 @@
                                 <div class="col-sm-2"></div>
                                 <div class="col-sm-10">
                                     <div class="form-check">
-                                        <input type="hidden" class="form-check-input" name="is_right" value="0">
-                                        <input type="checkbox" class="form-check-input" name="is_right" id="is_right" value="1"
-                                            {{ ($answer->is_right) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="is_right">
+                                        <input type="hidden" class="form-check-input" name="is_correct" value="0">
+                                        <input type="checkbox" class="form-check-input" name="is_correct" id="is_correct" value="1"
+                                            {{ ($answer->is_correct) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="is_correct">
                                             Is correct answer
                                         </label>
                                     </div>

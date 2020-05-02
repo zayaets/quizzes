@@ -6,10 +6,26 @@ use App\Answer;
 use App\Question;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 class AnswerController extends Controller
 {
+
+    private $question = null;
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+
+        if (request()->has('question')) {
+            $id = request()->query('question');
+            $question = Question::findOrFail($id);
+            $this->question = $question;
+//            $answers = Answer::where('question_id', $id)->get();
+//            dd($question);
+        }
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,42 +33,15 @@ class AnswerController extends Controller
      */
     public function index()
     {
-        $message = request()->session()->has('message')
-            ? request()->session()->get('message')
-            : null;
-
-//        dd(request()->get('question'));
-
-        if (request()->has('question')) {
-            $id = request()->query('question');
-            $question = Question::findOrFail($id);
-            $answers = Answer::where('question_id', $id)->get();
-//            dd($question);
-        } else {
-            abort(403);
-        }
 
 
-//        dd($answers);
-//        exit();
-        /*$answers = null;
-        if (request()->session()->has('question')) {
-            $id = request()->session()->get('question')['id'];
-            $answers = Answer::where('question_id', $id)->get();
-            $question = Question::findOrFail($id);
-        } else {
-            abort(403);
-        }*/
+        $this->authorize('view-answers', $this->question);
 
-//        $this->authorize('can-edit', $question);
-        $this->authorize('update', $question);
-
-
+        $answers = $this->question->answers;
 
         return view('answers.index', [
             'answers' => $answers,
-            'question' => $question,
-            'message' => $message,
+            'question' => $this->question,
         ]);
     }
 
@@ -63,41 +52,16 @@ class AnswerController extends Controller
      */
     public function create()
     {
-        $message = (request()->session()->has('message'))
-            ? request()->session()->get('message')
-            : $message = null;
 
-        /*$question_id = (request()->session()->has('question'))
-        ? request()->session()->get('question')['id']
-        : null;*/
+        $this->authorize('create-answers', $this->question);
 
-        $id = request()->has('question')
-            ? request()->get('question')
-            : null;
-
-        $question = Question::findOrFail($id);
-
-        $this->authorize('can-create-answers', $question);
-
-        if ($question) {
-            $answers = Answer::where('question_id', $id)->get();
-        }
-
-
-        // for redirect
-        $back = request()->has('back')
-            ?  request()->query('back')
-            : null;
-
-//        dd($back);
-
+        $answers = $this->question->answers;
 
 //        dd($question_id);
         return view('answers.create', [
-            'question' => $question,
+            'question' => $this->question,
             'answers' => $answers,
-            'message' => $message,
-            'back' => $back,
+
         ]);
     }
 
@@ -111,20 +75,24 @@ class AnswerController extends Controller
     {
         $data = $request->validate([
             'text' => 'required',
-            'is_right' => 'numeric',
-            'question_id' => 'required',
+            'is_correct' => 'numeric',
+            'question' => 'required',
         ]);
+
         $answer = new Answer;
 
         $answer->text = $data['text'];
-        $answer->is_right = $data['is_right'];
-        $answer->question()->associate($data['question_id']);
+        $answer->is_correct = $data['is_correct'];
+        $answer->question()->associate($data['question']);
         $answer->save();
 
-        $request->session()->flash('message', 'Answer successfully created!');
+//        $q_id = ;
+//        $request->session()->flash;
 //        return redirect()->route('answers.create');
 //        return back();
-        return redirect()->route('answers.index', [ 'question' => $data['question_id']]);
+        // , ['question' => $data['question_id']]
+        return redirect()->route('answers.index', ['question' => $this->question])
+            ->with('success-message', 'Answer successfully created!');
     }
 
     /**
@@ -148,6 +116,8 @@ class AnswerController extends Controller
      */
     public function edit(Answer $answer)
     {
+        $this->authorize('edit-answers', $answer);
+
         return view('answers.edit', [
             'answer' => $answer,
         ]);
@@ -163,13 +133,15 @@ class AnswerController extends Controller
     public function update(Request $request, Answer $answer)
     {
 
+        $this->authorize('edit-answers', $answer);
+
         $data = $request->validate([
             'text' => 'required',
-            'is_right' => 'numeric',
+            'is_correct' => 'numeric',
         ]);
 
         $answer->text = $data['text'];
-        $answer->is_right = $data['is_right'];
+        $answer->is_correct = $data['is_correct'];
         $answer->save();
 
         $q_id = $answer->question->id;
@@ -203,6 +175,8 @@ class AnswerController extends Controller
      */
     public function destroy(Answer $answer)
     {
+        $this->authorize('delete-answer', $answer);
+
         $answer_text = $answer->text;
         $answer->delete();
         request()->session()->flash('message', 'Answer "' . $answer_text . '" successfully deleted!');
@@ -246,8 +220,8 @@ class AnswerController extends Controller
 
         $current_user->answeredAnswers()->attach($data['answers']);
 
-        request()->session()->flash('message', 'Answered successfully!');
-        return back();
+//        request()->session()->flash('message', 'Answered successfully!');
+        return back()->with('success-message', 'Answered successfully!');
 
 
 
@@ -262,9 +236,5 @@ class AnswerController extends Controller
         }*/
     }
 
-    private function getQuestionId(array $data)
-    {
-        reset($data);
-        return key($data);
-    }
+
 }

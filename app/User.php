@@ -68,7 +68,7 @@ class User extends Authenticatable
     }
 
 
-    public function hasAccess(array $permissions) : bool
+    public function hasAccess($permissions)
     {
         foreach ($this->roles as $role) {
             if ($role->hasAccess($permissions)) {
@@ -78,7 +78,7 @@ class User extends Authenticatable
         return false;
     }
 
-    public function inRole(string $roleSlug)
+    public function inRole($roleSlug)
     {
         return $this->roles()->where('slug', $roleSlug)->count() == 1;
     }

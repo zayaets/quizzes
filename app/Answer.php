@@ -56,7 +56,7 @@ class Answer extends Model
 
     /**
      * 0 - wrong
-     * 1 - right
+     * 1 - Answer is correct by itself
      * 2 - unanswered
      * @return mixed
      */
@@ -66,8 +66,9 @@ class Answer extends Model
 //        return $this->is_correct;
 
 
-        // answer is correct and user checked
-        if ($this->is_correct === true && $this->is_correct === $this->answeredByExists) {
+        // answer is correct
+//        if ($this->is_correct === true && $this->is_correct === $this->answeredByExists) {
+        if ($this->is_correct === true) {
             return 1;
             // answer is incorrect and user didn't check
         } elseif ($this->is_correct != $this->answeredByExists) {

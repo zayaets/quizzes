@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Answer;
+use App\Policies\AnswerPolicy;
 use App\Policies\QuestionPolicy;
 use App\Question;
 use App\User;
@@ -18,6 +20,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         // 'App\Model' => 'App\Policies\ModelPolicy',
         Question::class => QuestionPolicy::class,
+//        Answer::class => AnswerPolicy::class,
     ];
 
     /**
@@ -30,6 +33,8 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         $this->registerQuestionPolicies();
+        $this->registerAnswerPolicies();
+        $this->registerAdminPolicies();
 
 
         /*Gate::define('create-question', function ($user) {
@@ -84,8 +89,50 @@ class AuthServiceProvider extends ServiceProvider
 
     public function registerQuestionPolicies()
     {
-        Gate::define('create-question', function ($user) {
-            return auth()->id() === $user->id && $user->hasAccess(['create-question']);
+        Gate::define('answer', function ($user, Question $question) {
+            return $user->id != $question->user_id;
+        });
+    }
+
+    public function registerAnswerPolicies()
+    {
+
+
+        Gate::define('view-answers', function ($user, Question $question) {
+//            return true;
+            return auth()->id() === $user->id
+                && $user->id === $question->user_id;
+        });
+
+        Gate::define('create-answers', function ($user, Question $question) {
+//            return $user->hasAccess(['create-answers']);
+            return $question->user_id === $user->id
+                && $user->hasAccess(['create-answers'])
+                && !$question->hasBeenAnswered();
+        });
+
+        Gate::define('edit-answers', function ($user, Answer $answer) {
+            return $user->hasAccess(['edit-answers'])
+                && $answer->question->user_id === $user->id
+                && !$answer->answeredByAnyExists;
+//            return $answer->question->user_id === auth()->id() && !$answer->answeredByAnyExists;
+        });
+
+
+        Gate::define('delete-answer', function ($user, Answer $answer) {
+            return $user->hasAccess(['delete-answers'])
+                && $answer->question->user_id === $user->id
+                && !$answer->answeredByAnyExists;
+//            return $answer->question->user_id === auth()->id() && !$answer->answeredByAnyExists;
+        });
+
+
+    }
+
+    public function registerAdminPolicies()
+    {
+        Gate::define('isAdmin', function ($user) {
+            return $user->inRole('admin');
         });
     }
 }

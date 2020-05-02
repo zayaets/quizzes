@@ -15,6 +15,14 @@ use Illuminate\Support\Str;
 
 class QuestionController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+
+        $this->authorizeResource(Question::class);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -43,63 +51,6 @@ class QuestionController extends Controller
     public function create()
     {
 
-
-        /*
-        if (Gate::allows('create-question')) {
-            dd('allows create');
-        }
-        */
-
-        /*
-        $que = Question::find(1);
-
-        if (Gate::allows('update-question', $que)) {
-            dd('user can update question');
-        }
-
-        if (Gate::denies('update-question', $que)) {
-            dd('user cannot update question');
-        }
-        */
-
-        /*
-        $user = User::find(2);
-        $que = Question::find(1);
-
-        if (Gate::forUser($user)->allows('update-question', $que)) {
-            dd('user can update question');
-        }
-
-        if (Gate::forUser($user)->denies('update-question', $que)) {
-            dd('user cannot update question');
-        }
-        */
-
-        /*
-        $que = Question::find(1);
-
-        if (Gate::any(['update-question', 'delete-question'], $que)) {
-            dd('User can update or delete question');
-        }
-        */
-
-        /*
-        $que = Question::find(1);
-
-        if (Gate::none(['update-question', 'delete-question'], $que)) {
-            dd('User cannot update or delete question');
-        }
-        */
-
-        /*
-        $que = Question::find(1);
-        Gate::authorize('update-question', $que);
-        */
-
-
-//        dd(Auth::user());
-
-
         return view('questions.create');
     }
 
@@ -126,16 +77,13 @@ class QuestionController extends Controller
         $question->owner()->associate(auth()->id());
         $question->save();
 
-        // params
-        $q_id = $question->id;
-        $back = 'home';
 
         if ($data['submit'] === 'Save and Close') {
             $request->session()->flash('message', 'Question saved successfully. In order to publish question you need to add answers.');
             return redirect()->route('home');
         } elseif ($data['submit'] === 'Create Answers') {
 //            $request->session()->put('question', ['id' => $question->id]);
-            return redirect()->route('answers.create', ['question' => $q_id, 'back' => $back]);
+            return redirect()->route('answers.create', ['question' => $question->id]);
         }
 
         abort(404);
@@ -150,12 +98,20 @@ class QuestionController extends Controller
     public function show(Question $question)
     {
 
-//        $question = $question1;
-        $message = request()->session()->has('message')
-            ? request()->session()->get('message')
-            : null;
+/*
+        $role = Role::where('slug', 'user')->first();
+        $perm = $role->permissions;
 
+        $perm['delete-question'] = true;
+        $perm['delete-answers'] = true;
+        $role->permissions = $perm;
+        $role->save();
+        */
+
+//        dd(auth()->user()->hasAccess(['create-answers']));
 //        dd($question->isValid());
+
+//        dd($question->hasBeenAnswered());
 
 
         return view('questions.show', [
@@ -191,18 +147,20 @@ class QuestionController extends Controller
     public function update(Request $request, Question $question)
     {
         $data = $request->validate([
+            'title' => 'required',
             'text' => 'required',
             'submit' => 'required'
         ]);
 
 //        dd($data);
 
+        $question->title = $data['title'];
         $question->text = $data['text'];
         $question->save();
 
         if ($data['submit'] === 'Save and Close') {
-            $request->session()->flash('message', 'Question "' . $question->id . '" edited successfully!');
-            return redirect()->route('home');
+//            $request->session()->flash();
+            return redirect()->route('home')->with('success-message', 'Question "' . $question->title . '" edited successfully!');
         } elseif ($data['submit'] === 'Edit Answers') {
 //            $request->session()->put('question', ['id' => $question->id]);
 //            return redirect()->route('answers.edit');

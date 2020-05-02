@@ -9,6 +9,13 @@ use Illuminate\Http\Request;
 class AdminController extends Controller
 {
 
+    public function __construct()
+    {
+//        $this->authorize('isAdmin');
+        $this->middleware('can:isAdmin');
+
+    }
+
     public function index()
     {
         return view('admin.index');

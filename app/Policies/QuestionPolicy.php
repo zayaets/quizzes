@@ -19,7 +19,7 @@ class QuestionPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -31,7 +31,7 @@ class QuestionPolicy
      */
     public function view(User $user, Question $question)
     {
-
+        return true;
     }
 
     /**
@@ -42,8 +42,7 @@ class QuestionPolicy
      */
     public function create(User $user)
     {
-//        return false;
-        return Auth::check();
+        return $user->hasAccess(['create-question']);
 
     }
 
@@ -56,7 +55,7 @@ class QuestionPolicy
      */
     public function update(User $user, Question $question)
     {
-        return !$question->beenAnswered;
+        return $user->id === $question->user_id && !$question->hasBeenAnswered();
     }
 
     /**
@@ -68,9 +67,7 @@ class QuestionPolicy
      */
     public function delete(User $user, Question $question)
     {
-//        if ($question->beenAnswered)
-
-        return $user->id === $question->user_id && !$question->beenAnswered;
+        return $user->id === $question->user_id && !$question->hasBeenAnswered();
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Answer;
+use App\Question;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +20,7 @@ class AnswerPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return false;
     }
 
     /**

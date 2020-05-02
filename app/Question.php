@@ -127,7 +127,12 @@ class Question extends Model
         return true;
     }
 
-    public function getBeenAnsweredAttribute()
+    /**
+     * Question at least once has been answered by someone and cannot be edited or deleted
+     *
+     * @return bool
+     */
+    public function hasBeenAnswered()
     {
         $answers = $this->answers->map(function($answer) {
             if  ($answer->answeredBy()->exists()) {
