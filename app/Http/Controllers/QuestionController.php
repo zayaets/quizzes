@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Answer;
+use App\Http\Requests\StoreQuestion as StoreQuestionRequest;
+use App\Http\Requests\UpdateQuestion as UpdateQuestionRequest;
 use App\Question;
 use App\Role;
 use App\User;
@@ -60,29 +62,27 @@ class QuestionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreQuestionRequest $request)
     {
-        $data = $request->validate([
-            'title' => 'required|max:191',
-            'text' => 'required|max:65000',
-            'submit' => 'required',
-        ]);
+        $data = $request->validated();
+
+        $submit = $data['submit'];
+        unset($data['submit']);
 
 //        dd($data);
 
         $question = new Question;
-//        $question->fill($data);
-        $question->title = $data['title'];
-        $question->text = $data['text'];
+        $question->fill($data);
+//        $question->title = $data['title'];
+//        $question->text = $data['text'];
         $question->owner()->associate(auth()->id());
         $question->save();
 
 
-        if ($data['submit'] === 'Save and Close') {
-            $request->session()->flash('message', 'Question saved successfully. In order to publish question you need to add answers.');
-            return redirect()->route('home');
-        } elseif ($data['submit'] === 'Create Answers') {
-//            $request->session()->put('question', ['id' => $question->id]);
+        if ($submit === 'Save and Close') {
+//            $request->session()->flash('message', 'text');
+            return redirect()->route('user.questions')->with('message', 'Question saved successfully. In order to publish question you need to add answers.');
+        } elseif ($submit === 'Create Answers') {
             return redirect()->route('answers.create', ['question' => $question->id]);
         }
 
@@ -98,22 +98,6 @@ class QuestionController extends Controller
     public function show(Question $question)
     {
 
-/*
-        $role = Role::where('slug', 'user')->first();
-        $perm = $role->permissions;
-
-        $perm['delete-question'] = true;
-        $perm['delete-answers'] = true;
-        $role->permissions = $perm;
-        $role->save();
-        */
-
-//        dd(auth()->user()->hasAccess(['create-answers']));
-//        dd($question->isValid());
-
-//        dd($question->hasBeenAnswered());
-
-
         return view('questions.show', [
             'question' => $question,
         ]);
@@ -128,12 +112,9 @@ class QuestionController extends Controller
      */
     public function edit(Question $question)
     {
-        // todo: here need to authorize editing question, user cannot edit it if question has been already once answered
-
 
         return view('questions.edit', [
             'question' => $question,
-            'beenAnswered' => $question->beenAnswered,
         ]);
     }
 
@@ -144,29 +125,21 @@ class QuestionController extends Controller
      * @param  \App\Question  $question
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Question $question)
+    public function update(UpdateQuestionRequest $request, Question $question)
     {
-        $data = $request->validate([
-            'title' => 'required',
-            'text' => 'required',
-            'submit' => 'required'
-        ]);
+        $data = $request->validated();
 
 //        dd($data);
-
-        $question->title = $data['title'];
-        $question->text = $data['text'];
+        $submit = $data['submit'];
+        unset($data['submit']);
+        $question->fill($data);
+//        $question->title = $data['title'];
+//        $question->text = $data['text'];
         $question->save();
 
-        if ($data['submit'] === 'Save and Close') {
+        if ($submit === 'Save and Close') {
 //            $request->session()->flash();
-            return redirect()->route('home')->with('success-message', 'Question "' . $question->title . '" edited successfully!');
-        } elseif ($data['submit'] === 'Edit Answers') {
-//            $request->session()->put('question', ['id' => $question->id]);
-//            return redirect()->route('answers.edit');
-//            return redirect()->route('answers.index');
-
-            return back();
+            return redirect()->route('user.questions')->with('success-message', 'Question "' . $question->title . '" edited successfully!');
         }
 
         abort(404);
@@ -181,12 +154,11 @@ class QuestionController extends Controller
      */
     public function destroy(Question $question)
     {
-        $question_text = $question->text;
-
+        $title = $question->title;
         $question->delete();
 
-        request()->session()->flash('message', 'Question "' . $question_text . '" successfully deleted!');
-        return back();
+//        request()->session()->flash('message', 'Question "' . $title . '" successfully deleted!');
+        return back()->with('success-message', 'Question "' . $title . '" successfully deleted!');
     }
 
 

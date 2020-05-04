@@ -11,7 +11,7 @@ class Question extends Model
     use Sortable;
 
     protected $fillable = [
-        'text', 'published'
+        'title', 'text', 'published'
     ];
 
     protected $casts = [

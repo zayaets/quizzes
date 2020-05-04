@@ -26,19 +26,32 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $message = request()->session()->has('message')
-            ? request()->session()->get('message')
-            : null;
+
 
         $questions = Question::ownQuestions()->get();
 
         return view('home', [
-            'questions' => $questions,
-            'message' => $message,
+
         ]);
     }
 
+    public function questions()
+    {
+        $questions = Question::ownQuestions()->sortable()->paginate(10);
 
+        return view('user.questions', [
+            'questions' => $questions,
+        ]);
+    }
+
+    public function question(Question $question)
+    {
+        $this->authorize('access-dashboard-question', $question);
+
+        return view('user.question', [
+            'question' => $question,
+        ]);
+    }
 
 
 }

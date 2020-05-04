@@ -7,8 +7,8 @@
                 <a href="{{ \Illuminate\Support\Facades\URL::previous() }}" class="btn btn-outline-secondary mb-3" title="Back"><i class="fas fa-arrow-left"></i></a>
 
                 <div class="card">
-                    <div class="card-header d-flex">
-                        <span class="my-auto">Answer:</span>
+                    <div class="card-header text-center">
+                        <h5>Answer</h5>
                         {{--<a href="#" class="btn btn-primary ml-auto"><i class="fas fa-pencil-alt"></i></a>--}}
 
 {{--                        <div><strong></strong></div>--}}

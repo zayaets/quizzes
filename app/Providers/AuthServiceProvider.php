@@ -35,60 +35,14 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerQuestionPolicies();
         $this->registerAnswerPolicies();
         $this->registerAdminPolicies();
-
-
-        /*Gate::define('create-question', function ($user) {
-            return $user->hasAcces();
-        });
-
-        Gate::define('update-question', function ($user, Question $question) {
-            return false;
-//            return $user->id === $question->user_id;
-        });
-
-        Gate::define('delete-question', function ($user, Question $question) {
-            return false;
-//            return $user->id === $question->user_id;
-        });*/
-
-        // don't allow to answer own questions
-
-        /*Gate::define('can-answer', function($user, Question $question) {
-            if ($user->id === $question->user_id) {
-                return false;
-            }
-            return true;
-        });*/
-
-
-        // allow edit only own questions
-        /*
-        Gate::define('can-edit', function($user, Question $question) {
-//            $answers = $question->answers;
-
-            if ($user->id === $question->user_id ) {
-                return true;
-            }
-            return false;
-        });
-        */
-
-
-        // if question belongs to the current user
-        /*
-        Gate::define('can-create-answers', function ($user, Question $question) {
-            if ($user->id === $question->user_id) {
-                return true;
-            }
-            return false;
-        });
-        */
-
-
     }
 
     public function registerQuestionPolicies()
     {
+        Gate::define('access-dashboard-question', function ($user, Question $question) {
+            return $user->id === $question->user_id;
+        });
+
         Gate::define('answer', function ($user, Question $question) {
             return $user->id != $question->user_id;
         });
@@ -111,19 +65,19 @@ class AuthServiceProvider extends ServiceProvider
                 && !$question->hasBeenAnswered();
         });
 
-        Gate::define('edit-answers', function ($user, Answer $answer) {
-            return $user->hasAccess(['edit-answers'])
+        Gate::define('update-answers', function ($user, Question $question, Answer $answer) {
+            return $user->hasAccess(['update-answers'])
                 && $answer->question->user_id === $user->id
-                && !$answer->answeredByAnyExists;
-//            return $answer->question->user_id === auth()->id() && !$answer->answeredByAnyExists;
+                && !$answer->answeredByAnyExists
+                && $question->id === $answer->question_id;
         });
 
 
-        Gate::define('delete-answer', function ($user, Answer $answer) {
+        Gate::define('delete-answer', function ($user, Question $question, Answer $answer) {
             return $user->hasAccess(['delete-answers'])
                 && $answer->question->user_id === $user->id
-                && !$answer->answeredByAnyExists;
-//            return $answer->question->user_id === auth()->id() && !$answer->answeredByAnyExists;
+                && !$answer->answeredByAnyExists
+                && $question->id === $answer->question_id;
         });
 
 

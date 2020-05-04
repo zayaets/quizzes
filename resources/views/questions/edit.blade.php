@@ -7,14 +7,11 @@
                 <a href="{{ \Illuminate\Support\Facades\URL::previous() }}" class="btn btn-outline-secondary mb-3" title="Back"><i class="fas fa-arrow-left"></i></a>
 
                 <div class="card">
-                    <div class="card-header d-flex align-items-center">
-                        Edit Question
+                    <div class="card-header text-center d-flex align-items-center">
+                        <h5>Edit Question</h5>
                         <a href="{{ route('answers.index', ['question' => $question->id]) }}" class="btn btn-info text-light ml-auto">Edit Answers</a>
                     </div>
                     <div class="card-body">
-
-
-
 
                         <form action="{{ route('questions.update', ['question' => $question->id]) }}" method="POST">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -38,7 +35,6 @@
 
                             <div class="d-flex">
                                 <input type="submit" class="btn btn-success ml-auto" name="submit" value="Save and Close">
-{{--                                <input type="submit" class="btn btn-primary ml-2" name="submit" value="Edit Answers">--}}
                             </div>
                         </form>
                     </div>

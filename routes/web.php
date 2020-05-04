@@ -20,6 +20,13 @@ Route::get('/', function () {
 Auth::routes(['register' => false]);
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['prefix' => 'user', 'middleware' => ['auth']], function () {
+    Route::get('questions', 'HomeController@questions')
+        ->name('user.questions');
+    Route::get('question/{question}', 'HomeController@question')
+        ->name('user.question');
+});
+
 
 Route::resource('questions', 'QuestionController')
 //    ->names([])
@@ -33,7 +40,7 @@ Route::post('answers/answer', 'AnswerController@answerQuestion')
 
 Route::resource('users', 'UserController');
 
-Route::group(['prefix' => 'admin'], function() {
+Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function() {
    Route::get('/', 'AdminController@index')
        ->name('admin.index');
     Route::get('questions', 'AdminController@questions')

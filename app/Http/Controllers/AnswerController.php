@@ -6,7 +6,8 @@ use App\Answer;
 use App\Question;
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\UpdateAnswer as UpdateAnswerRequest;
+use App\Http\Requests\StoreAnswer as StoreAnswerRequest;
 use Illuminate\Support\Facades\Validator;
 
 class AnswerController extends Controller
@@ -34,6 +35,7 @@ class AnswerController extends Controller
     public function index()
     {
 
+        $this->isQuestion();
 
         $this->authorize('view-answers', $this->question);
 
@@ -52,6 +54,7 @@ class AnswerController extends Controller
      */
     public function create()
     {
+        $this->isQuestion();
 
         $this->authorize('create-answers', $this->question);
 
@@ -71,14 +74,13 @@ class AnswerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreAnswerRequest $request)
     {
-        $data = $request->validate([
-            'text' => 'required',
-            'is_correct' => 'numeric',
-            'question' => 'required',
-        ]);
+        $this->isQuestion();
 
+        $this->authorize('create-answers', $this->question);
+
+        $data = $request->validated();
         $answer = new Answer;
 
         $answer->text = $data['text'];
@@ -116,7 +118,9 @@ class AnswerController extends Controller
      */
     public function edit(Answer $answer)
     {
-        $this->authorize('edit-answers', $answer);
+        $this->isQuestion();
+
+        $this->authorize('update-answers', [$this->question, $answer]);
 
         return view('answers.edit', [
             'answer' => $answer,
@@ -130,41 +134,24 @@ class AnswerController extends Controller
      * @param  \App\Answer  $answer
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Answer $answer)
+    public function update(UpdateAnswerRequest $request, Answer $answer)
     {
 
-        $this->authorize('edit-answers', $answer);
+        $this->isQuestion();
 
-        $data = $request->validate([
-            'text' => 'required',
-            'is_correct' => 'numeric',
-        ]);
+        $this->authorize('update-answers', [$this->question, $answer]);
 
-        $answer->text = $data['text'];
-        $answer->is_correct = $data['is_correct'];
+        $data = $request->validated();
+
+        $answer->fill($data);
+//        $answer->text = $data['text'];
+//        $answer->is_correct = $data['is_correct'];
         $answer->save();
 
-        $q_id = $answer->question->id;
+//        $request->session()->flash();
 
-
-        $request->session()->flash('message', 'Answer "' . $answer->text . '" edited successfully!');
-
-
-        return redirect()->route('answers.index', ['question' => $q_id]);
-        /*$data = $request->validate([
-            'text' => 'required|min:5',
-            'is_right' => 'numeric',
-            'question_id' => 'required',
-        ]);
-        $answer = new Answer;
-
-        $answer->text = $data['text'];
-        $answer->is_right = $data['is_right'];
-        $answer->question()->associate($data['question_id']);
-        $answer->save();
-
-        $request->session()->flash('message', 'Answer successfully created');
-        return redirect()->route('answers.create');*/
+        return redirect()->route('answers.index', ['question' => $answer->question->id])
+            ->with('success-message', 'Answer "' . $answer->text . '" edited successfully!');
     }
 
     /**
@@ -175,12 +162,14 @@ class AnswerController extends Controller
      */
     public function destroy(Answer $answer)
     {
+        $this->isQuestion();
+
         $this->authorize('delete-answer', $answer);
 
         $answer_text = $answer->text;
         $answer->delete();
-        request()->session()->flash('message', 'Answer "' . $answer_text . '" successfully deleted!');
-        return back();
+//        request()->session()->flash();
+        return back()->with('message', 'Answer "' . $answer_text . '" successfully deleted!');
     }
 
     public function answerQuestion(Request $request)
@@ -213,27 +202,17 @@ class AnswerController extends Controller
 
         $current_user = User::find(auth()->id());
 
-//        $attach = [];
-//        date_default_timezone_set('Europe/Nicosia');
-//        date('Y-m-d H:i:s')
-
 
         $current_user->answeredAnswers()->attach($data['answers']);
 
-//        request()->session()->flash('message', 'Answered successfully!');
         return back()->with('success-message', 'Answered successfully!');
+    }
 
-
-
-        /*foreach($answers as $key => $value) {
-            echo nl2br('Answer ID: ' . $key . ' Checked: ' . $value . "\n");
-            $db_answer = Answer::find($key);
-            if ($db_answer->is_right == $value) {
-                $current_user->answered()->attach($db_answer, ['answered_right' => true]);
-            } else {
-                $current_user->answered()->attach($db_answer, ['answered_right' => false]);
-            }
-        }*/
+    private function isQuestion()
+    {
+        if (is_null($this->question)) {
+            abort(403, 'You have no access.');
+        }
     }
 
 

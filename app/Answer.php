@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Answer extends Model
 {
     protected $fillable = [
-        'text', 'question_id', 'is_correct'
+        'text', 'is_correct',
     ];
 
     protected $casts = [
@@ -76,54 +76,5 @@ class Answer extends Model
         }
         return 2;
     }
-
-    /*public function scopeAnsweredByExists($query, $a_id)
-    {
-        $answer = $query->where('id', $a_id);
-        return $answer->answeredBy()->exists();
-    }*/
-
-    /*public function scopeAnsweredCorrect($query)
-    {
-        $answer = $query->where('');
-    }*/
-
-
-
-
-
-
-
-    /**
-     * 0 - wrong
-     * 1 - right
-     * 2 - unanswered
-     *
-     * @param $query
-     * @param $answer_id
-     * @return int
-     */
-    /*public function scopeIsCorrect($query, $answer_id)
-    {
-
-        $answer = $query->with(['answeredBy' => function ($q) {
-            $q->where('user_id', auth()->id())->get();
-        }])->where('id', $answer_id)->first();
-
-        $answeredValue = isset($answer->answeredBy[0]->pivot->answered)
-            ? $answer->answeredBy[0]->pivot->answered
-            : null;
-
-        if (!is_null($answeredValue)) {
-            if ($answeredValue === $answer->is_correct) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
-
-        return 2;
-
-    }*/
 
 }

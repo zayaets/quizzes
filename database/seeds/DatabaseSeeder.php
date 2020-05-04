@@ -12,13 +12,8 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // $this->call(UsersTableSeeder::class);
-//        $this->call(QuestionsTableSeeder::class);
+        $this->call(StatusSeeder::class);
 
-        /*factory(\App\User::class, 2)->create()->each(function ($u) {
-            $u->questions()->saveMany(factory(\App\Question::class, 3)->create()->each(function ($q) {
-                $q->answers()->saveMany(factory(\App\Answer::class, 4)->create());
-            }));
-        });*/
 
         $adminRole = factory(\App\Role::class)->states('admin')->create();
         $userRole = factory(\App\Role::class)->states('user')->create();
@@ -33,8 +28,9 @@ class DatabaseSeeder extends Seeder
             $user->roles()->attach($userRole);
         });
 
+
         $questions = factory(\App\Question::class, 10)->create([
-            'user_id' => $users->random(1)->pluck('id')[0]
+            'user_id' => $users->random(1)->pluck('id')[0],
         ])->each(function ($q) use ($users) {
             $q->answers()->saveMany(factory(\App\Answer::class, 4)->create());
         });

@@ -31,13 +31,7 @@
                                     @endforeach
                                 @endif
 
-                                @if(session('error-message'))
-                                    <div class="alert alert-danger">{{ session('error-message') }}</div>
-                                @endif
-
-                                @if(session('success-message'))
-                                    <div class="alert alert-success">{{ session('success-message') }}</div>
-                                @endif
+                                @includeIf('templates.session_messages')
 
                                 <div class="card mb-3">
                                     <div class="card-body">
@@ -79,15 +73,12 @@
                                                     @endif
                                                 </div>
                                             @endforeach
+
                                             @can('answer', $question)
                                                 @if(!$question->answered)
                                                     <button type="submit" class="btn btn-primary">Submit</button>
                                                 @endif
                                             @endcan
-
-                                            {{--                                    <a href="{{ route('') }}" class="btn btn-primary"></a>--}}
-
-
                                         </form>
                                     </div>
                                 </div>

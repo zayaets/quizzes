@@ -4,11 +4,11 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <a href="{{ \Illuminate\Support\Facades\URL::previous() }}" class="btn btn-secondary mb-3" title="Back"><i class="fas fa-arrow-left"></i></a>
+                <a href="{{ \Illuminate\Support\Facades\URL::previous() }}" class="btn btn-outline-secondary mb-3" title="Back"><i class="fas fa-arrow-left"></i></a>
 
                 <div class="card">
-                    <div class="card-header">
-                        Create Question
+                    <div class="card-header text-center">
+                        <h5>Create Question</h5>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('questions.store') }}" method="POST">

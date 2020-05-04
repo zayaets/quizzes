@@ -4,45 +4,15 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <a href="{{ \Illuminate\Support\Facades\URL::previous() }}" class="btn btn-secondary mb-3" title="Back"><i class="fas fa-arrow-left"></i></a>
+                <a href="{{ \Illuminate\Support\Facades\URL::previous() }}" class="btn btn-outline-secondary mb-3" title="Back"><i class="fas fa-arrow-left"></i></a>
 
                 <div class="card">
-                    <div class="card-header">
-                        Edit Answer:
-{{--                        <div><strong>{{ $question->text }}</strong></div>--}}
+                    <div class="card-header text-center">
+                        <h5>Edit Answer</h5>
                     </div>
                     <div class="card-body">
 
                         @includeIf('templates.session_messages')
-
-                        {{--@if(count($answers))
-                            <div class="row">
-                                <div class="col">
-                                    <table class="table">
-                                        <thead>
-                                        <tr>
-                                            <th>Text</th>
-                                            <th>Is Correct</th>
-                                            <th>Updated</th>
-                                            <th>Created</th>
-                                            <th>Question ID</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        @foreach($answers as $answer)
-                                            <tr>
-                                                <td>{{ $answer->text }}</td>
-                                                <td>{{ $answer->is_right }}</td>
-                                                <td>{{ $answer->updated_at }}</td>
-                                                <td>{{ $answer->created_at }}</td>
-                                                <td>{{ $answer->question_id }}</td>
-                                            </tr>
-                                        @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        @endif--}}
 
 
                         <form action="{{ route('answers.update', ['answer' => $answer->id]) }}" method="POST">

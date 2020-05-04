@@ -6,8 +6,8 @@
             <div class="col-md-8">
                 @if(isset($users))
                     <table class="table">
-                        <thead {{--class="thead-dark"--}}>
-                        <tr class="bg-info">
+                        <thead class="thead-light">
+                        <tr>
                             <th>ID</th>
                             <th>Text</th>
                             <th>User ID</th>

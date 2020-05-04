@@ -21,6 +21,17 @@ class Role extends Model
 
     public function getPermissions()
     {
+        /*
+        $role = Role::where('slug', 'user')->first();
+        $perm = $role->permissions;
+
+        $perm['delete-question'] = true;
+        $perm['delete-answers'] = true;
+        $role->permissions = $perm;
+        $role->save();
+        */
+
+
         // json_decode($perm, true)
         return json_decode($this->permissions, true);
     }

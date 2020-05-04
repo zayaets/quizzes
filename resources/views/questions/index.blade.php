@@ -9,8 +9,8 @@
                         <thead class="thead-light">
                             <tr>
 {{--                                <th> @sortablelink('id', 'ID')</th>--}}
-                                <th> @sortablelink('text', 'Text')</th>
-                                <th> @sortablelink('user_id', 'Owner')</th>
+                                <th> @sortablelink('title', 'Question')</th>
+                                <th> @sortablelink('owner.name', 'Owner')</th>
                                 <th> @sortablelink('created_at', 'Created')</th>
                             </tr>
                         </thead>

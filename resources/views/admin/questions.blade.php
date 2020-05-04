@@ -29,7 +29,7 @@
                                     <th scope="col">@sortablelink('title', 'Title')</th>
                                     <th scope="col">@sortablelink('text', 'Text')</th>
                                     <th scope="col">@sortablelink('published', 'Published')</th>
-                                    <th scope="col">@sortablelink('user_id', 'User')</th>
+                                    <th scope="col">@sortablelink('owner.name', 'User')</th>
                                     <th scope="col"></th>
                                     <th scope="col"></th>
                                 </tr>
