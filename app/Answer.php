@@ -3,9 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Answer extends Model
 {
+
+    use SoftDeletes;
+
     protected $fillable = [
         'text', 'is_correct',
     ];
@@ -14,18 +18,32 @@ class Answer extends Model
         'is_correct' => 'boolean'
     ];
 
+    /**
+     * the Question that the Answer is belongs to
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function question()
     {
         return $this->belongsTo(Question::class);
     }
 
+    /**
+     * All Users that have chosen this Answer
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function answeredBy()
     {
         return $this->belongsToMany(User::class, 'answer_user', 'answer_id', 'user_id')->withTimestamps();
 //            ->withPivot(['user_id', 'answer_id', 'answered', 'created_at', 'updated_at']);
     }
 
-
+    /**
+     * Check if current user has chosen the Answer
+     *
+     * @return bool
+     */
     public function getAnsweredByExistsAttribute()
     {
         // very important to check if answered by logged in user
@@ -34,7 +52,7 @@ class Answer extends Model
     }
 
     /**
-     * if Question has been once answered by someone
+     * if Answer has been at least once chosen by anyone at all
      *
      * @return bool
      */
@@ -43,6 +61,11 @@ class Answer extends Model
         return $this->answeredBy()->exists();
     }
 
+    /**
+     * If User has chosen the Answer which is correct
+     *
+     * @return bool
+     */
     public function getAnsweredCorrectAttribute()
     {
 //        return gettype($this->is_correct);
@@ -55,6 +78,8 @@ class Answer extends Model
 
 
     /**
+     * To show where User made a mistake
+     *
      * 0 - wrong
      * 1 - Answer is correct by itself
      * 2 - unanswered

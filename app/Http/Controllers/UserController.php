@@ -59,8 +59,23 @@ class UserController extends Controller
 //        $user = $user->toArray();
         // todo: show user
 //        dd($user);
+        $stat = [
+            'createdQuestions',
+            'answeredQuestions',
+            'todayNewUsers',
+            'lastWeekNewUsers',
+            'lastMonthNewUsers',
+            'totalQuestions',
+            'countUsers',
+        ];
+        $stat_data = [];
+        foreach ($stat as $item) {
+            $stat_data[$item] = $user->stat([$item]);
+        }
+
         return view('users.show', [
             'user' => $user,
+            'stat' => $stat_data,
         ]);
     }
 

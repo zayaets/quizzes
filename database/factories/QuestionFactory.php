@@ -10,6 +10,6 @@ $factory->define(Question::class, function (Faker $faker) {
         'title' => $faker->unique()->sentence(),
         'text' => $faker->unique()->realText(150, 2),
         'user_id' => factory(\App\User::class)->create()->id,
-        'status_id' => \App\Status::where('title', 'draft')->get('id'),
+        'status_id' => \App\Status::where('title', 'draft')->pluck('id')[0],
     ];
 });

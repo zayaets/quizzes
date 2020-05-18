@@ -14,6 +14,9 @@
                                 <h2>{{ $question->title }}</h2>
                             </div>
                             <div class="card-body">
+                                @if($question->status->slug === 'rejected')
+                                    <div class="alert alert-danger">{{ $question->note }}</div>
+                                @endif
                                 <p>{{ $question->text }}</p>
                             </div>
                         </div>

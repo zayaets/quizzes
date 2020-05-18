@@ -11,6 +11,10 @@ class QuestionPolicy
 {
     use HandlesAuthorization;
 
+    private $allowed_statuses = [
+        'draft', 'rejected'
+    ];
+
     /**
      * Determine whether the user can view any models.
      *
@@ -31,6 +35,7 @@ class QuestionPolicy
      */
     public function view(User $user, Question $question)
     {
+//        return $user->id === $question->user_id;
         return true;
     }
 
@@ -57,7 +62,8 @@ class QuestionPolicy
     {
         return $user->hasAccess(['update-question'])
             && $user->id === $question->user_id
-            && !$question->hasBeenAnswered();
+            && !$question->hasBeenAnswered()
+            && in_array($question->status->slug, $this->allowed_statuses);
     }
 
     /**
@@ -71,7 +77,8 @@ class QuestionPolicy
     {
         return $user->hasAccess(['delete-question'])
             && $user->id === $question->user_id
-            && !$question->hasBeenAnswered();
+            && !$question->hasBeenAnswered()
+            && in_array($question->status->slug, $this->allowed_statuses);
     }
 
     /**

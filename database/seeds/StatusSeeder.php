@@ -12,10 +12,27 @@ class StatusSeeder extends Seeder
     public function run()
     {
         $statuses = \Illuminate\Support\Facades\DB::table('statuses')->insert([
-            ['title' => 'published'],
-            ['title' => 'draft'],
-            ['title' => 'awaiting_approval'],
-            ['title' => 'declined']
+            [
+                'title' => 'Published',
+                'slug' => 'published'
+            ],
+            [
+                'title' => 'Draft',
+                'slug' => 'draft'
+            ],
+            [
+                'title' => 'Awaiting approval',
+                'slug' => 'awaiting_approval'
+            ],
+            [
+                'title' => 'Rejected',
+                'slug' => 'rejected'
+            ],
+            [
+                'title' => 'Hidden',
+                'slug' => 'hidden'
+            ],
+
         ]);
     }
 }

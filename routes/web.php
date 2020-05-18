@@ -17,9 +17,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes(['register' => false]);
+//Auth::routes(['register' => false]);
+Auth::routes();
+
+/**
+ * User account
+ */
 
 Route::get('/home', 'HomeController@index')->name('home');
+
 Route::group(['prefix' => 'user', 'middleware' => ['auth']], function () {
     Route::get('questions', 'HomeController@questions')
         ->name('user.questions');
@@ -27,10 +33,22 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth']], function () {
         ->name('user.question');
 });
 
+/**
+ * Question
+ */
 
 Route::resource('questions', 'QuestionController')
 //    ->names([])
     ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
+
+Route::post('questions/publish/{question} ', 'QuestionController@publish')
+    ->name('questions.publish');
+Route::post('questions/unpublish/{question} ', 'QuestionController@unpublish')
+    ->name('questions.unpublish');
+
+/**
+ * Answer
+ */
 
 Route::resource('answers', 'AnswerController')
     ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
@@ -38,19 +56,31 @@ Route::resource('answers', 'AnswerController')
 Route::post('answers/answer', 'AnswerController@answerQuestion')
     ->name('answers.answer');
 
+
+/**
+ * Users
+ */
 Route::resource('users', 'UserController');
 
+/**
+ * Admin
+ */
+
 Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function() {
-   Route::get('/', 'AdminController@index')
+    Route::get('/', 'AdminController@index')
        ->name('admin.index');
     Route::get('questions', 'AdminController@questions')
         ->name('admin.questions');
+    Route::get('question/{question}', 'AdminController@question')
+        ->name('admin.question');
     Route::get('users', 'AdminController@users')
         ->name('admin.users');
-    Route::post('question/publish/{question}', 'AdminController@publish')
+    Route::post('question/status', 'AdminController@status')
+        ->name('admin.question.status');
+/*    Route::post('question/publish/{question}', 'AdminController@publish')
         ->name('question.publish');
     Route::post('question/unpublish/{question}', 'AdminController@unpublish')
-        ->name('question.unpublish');
+        ->name('question.unpublish');*/
 });
 
 /*Route::group(['prefix' => 'users'], function () {

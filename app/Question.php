@@ -3,11 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Kyslik\ColumnSortable\Sortable;
 
 class Question extends Model
 {
 
+    use SoftDeletes;
     use Sortable;
 
     protected $fillable = [
@@ -32,20 +34,60 @@ class Question extends Model
         return $this->hasMany(Answer::class);
     }
 
+    /**
+     * what Status the Question has
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'status_id', 'id');
+    }
+
+    /**
+     * only own Questions
+     *
+     * @param $query
+     * @return mixed
+     */
     public function scopeOwnQuestions($query)
     {
         return $query->where('user_id', auth()->id());
     }
 
+    /**
+     * Other User's Questions that are displaying for current User
+     *
+     * @param $query
+     * @return mixed
+     */
     public function scopeOthersQuestions($query)
     {
-        return $query->where('user_id', '!=', auth()->id());
+        $status = Status::where('slug', 'published')->first();
+
+        return $query->where([
+            ['user_id', '!=', auth()->id()],
+            ['status_id', $status->id]
+            ]);
     }
 
-    public function scopePublished($query)
+
+    /**
+     * what Statuses the Question can be changed to
+     *
+     * @return mixed
+     */
+    public function availableStatuses()
     {
-        return $query->where('published', 1);
+        $statuses = Status::where('id', '!=', $this->status_id)->get();
+        return $statuses;
     }
+
+/*    public function scopePublished($query)
+    {
+        // todo statuses
+        return $query->where('published', 1);
+    }*/
 
 
     /*public function getPublishedAttribute()
@@ -53,17 +95,23 @@ class Question extends Model
         return $this->published;
     }*/
 
+    /**
+     * if Question has Answers
+     *
+     * @return bool
+     */
     public function getAnswersExistAttribute()
     {
         return $this->answers()->exists();
     }
 
-    /*
-     * !!!
-     * checks if Question is valid/suitable for publishing
+    /**
+     * for User - checks if Question is valid/suitable for publishing
      * if it has:
      * 0) at least 2 Answers
      * 1) at least one Answer is correct
+     *
+     * @return bool
      */
     public function isValid()
     {
@@ -91,6 +139,11 @@ class Question extends Model
 
     }
 
+    /**
+     * Checks if User has answered the Question
+     *
+     * @return bool
+     */
     public function getAnsweredAttribute()
     {
         $answers = $this->answers->map(function ($answer) {
@@ -110,6 +163,11 @@ class Question extends Model
         return false;
     }
 
+    /**
+     * if the Question has been answered correct
+     *
+     * @return bool
+     */
     public function getAnsweredCorrectAttribute()
     {
         $answers = $this->answers->map(function ($answer) {
@@ -151,53 +209,4 @@ class Question extends Model
         return false;
     }
 
-
-    public function hey()
-    {
-        return "blah";
-    }
-
-/*    public function scopeAnswered($query, $q_id)
-    {
-        $question = $query->where('id', $q_id);
-
-        $answered = [];
-        foreach ($question->answers as $answer) {
-            $answered[$answer->id] = $answer->answeredByExists($answer->id);
-        }
-
-        return $answered;
-    }*/
-
-
-
-
-
-    /**
-     * if one of the answers is wrong the whole question is incorrect
-     *
-     * 0 - wrong
-     * 1 - correct
-     * 2 - unanswered
-     *
-     * @param $query
-     * @param $question_id
-     * @return mixed
-     */
-    /*public function scopeIsCorrect($query, $question_id)
-    {
-        $answers = $query->find($question_id)->answers;
-
-        if (count($answers)) {
-            foreach ($answers as $answer) {
-                if (0 === Answer::isCorrect($answer->id)) {
-//                    echo 'wrong';
-//                    break;
-                    return 0;
-                }
-            }
-            return 1;
-        }
-        return 2;
-    }*/
 }

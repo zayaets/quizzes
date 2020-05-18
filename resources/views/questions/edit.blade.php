@@ -14,23 +14,23 @@
                     <div class="card-body">
 
                         <form action="{{ route('questions.update', ['question' => $question->id]) }}" method="POST">
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="_method" value="PUT">
+                            @csrf
+                            @method('PUT')
 
                             <div class="form-group">
                                 <label for="title">Title</label>
                                 <input type="text" name="title" id="title" class="form-control" value="{{ old('title', $question->title) }}">
-                                @if($errors->has('title'))
+                                @error('title')
                                     <div class="invalid-feedback d-block">{{ $errors->first('title') }}</div>
-                                @endif
+                                @enderror
                             </div>
 
                             <div class="form-group">
                                 <label for="text">Text</label>
                                 <textarea name="text" id="text" cols="30" rows="5" class="form-control">{{old('text', $question->text)}}</textarea>
-                                @if($errors->has('text'))
+                                @error('text')
                                     <div class="invalid-feedback d-block">{{ $errors->first('text') }}</div>
-                                @endif
+                                @enderror
                             </div>
 
                             <div class="d-flex">

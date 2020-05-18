@@ -4,13 +4,74 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <a href="{{ route('questions.index') }}" class="btn btn-outline-secondary mb-3" title="Back"><i class="fas fa-arrow-left"></i></a>
+                <a href="{{ route('admin.questions') }}" class="btn btn-outline-secondary mb-3" title="Back"><i class="fas fa-arrow-left"></i></a>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        @includeIf('templates.session_messages')
+
+                        <h4 class="text-center">Change Question's status</h4>
+                        <form action="{{ route('admin.question.status') }}" method="post">
+                            @csrf
+
+                            <input type="hidden" name="question" value="{{ $question->id }}">
+
+                            <div class="form-group row">
+                                <label for="status" class="col-sm-3 col-form-label">Status</label>
+                                <div class="col-sm-9">
+                                    <select name="status" id="status" class="form-control">
+                                        @foreach($question->availableStatuses() as $status)
+                                            <option value="{{ $status->slug }}"
+                                                {{ (old('status', '') === $status->slug) ? 'selected' : '' }}
+                                            >{{ $status->title }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="note" class="col-sm-3 col-form-label">Note</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="note" id="note" class="form-control">
+                                    {{--<small>It's required to provide a note if you change status to 'Rejected'</small>--}}
+                                    @includeIf('templates.form_field_has_error', ['field_name' => 'note'])
+                                </div>
+                            </div>
+
+                            <div class="d-flex">
+                                <button type="submit" class="btn btn-primary ml-auto">Change</button>
+                            </div>
+
+                            {{--<div class="form-group">
+                                <label for="status">Status</label>
+                                <select name="status" id="status" class="form-control">
+                                    @foreach($question->availableStatuses() as $status)
+                                        <option value="{{ $status->id }}">{{ $status->title }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="note">Note</label>
+                                <input type="text" name="note" id="note" class="form-control">
+                            </div>--}}
+
+
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+
 
                 @if(isset($question))
                     @if(count($question->answers))
                         <div class="card">
                             <div class="card-header d-flex align-items-center">
-                                <h2>{{ $question->title }}</h2>
+                                <h2>{{ $question->title }} <span class="badge badge-primary">{{ $question->status->title }}</span></h2>
 
                                 @can('can-edit', $question)
                                     <a href="{{ route('questions.edit', ['question' => $question->id]) }}"
@@ -25,24 +86,24 @@
                                     </div>
                                 </div>
 
-                                @if($errors->any())
+                                {{--@if($errors->any())
                                     @foreach($errors->all() as $error)
                                         <div class="alert alert-danger">{{ $error }}</div>
                                     @endforeach
-                                @endif
+                                @endif--}}
 
-                                @includeIf('templates.session_messages')
 
-                                <div class="card mb-3">
+
+                                {{--<div class="card mb-3">
                                     <div class="card-body">
                                         <form action="{{ route('answers.answer') }}" method="post">
                                             {{ csrf_field() }}
 
                                             @foreach($question->answers as $answer)
-                                                {{--                                        {{ dd($answer->answeredCorrect) }}--}}
+                                                --}}{{--                                        {{ dd($answer->answeredCorrect) }}--}}{{--
                                                 <div class="form-group form-check">
                                                     <input type="hidden" name="question_id" value="{{ $question->id }}">
-                                                    {{--                                            <input type="hidden" name="question[{{ $question->id }}][{{ $answer->id }}]" value="0">--}}
+                                                    --}}{{--                                            <input type="hidden" name="question[{{ $question->id }}][{{ $answer->id }}]" value="0">--}}{{--
                                                     <input type="checkbox" name="answers[]" value="{{ $answer->id }}" id="answer-{{ $answer->id }}" class="form-check-input"
                                                         @if($answer->answeredByExists)
                                                             checked
@@ -66,7 +127,7 @@
                                                     </label>
                                                     @if($question->answered)
                                                         @if($answer->answeredValue === 1)
-{{--                                                            <span class="badge badge-success">Correct</span>--}}
+--}}{{--                                                            <span class="badge badge-success">Correct</span>--}}{{--
                                                         @elseif($answer->answeredValue === 0)
                                                             <span class="badge badge-danger">Incorrect</span>
                                                         @endif
@@ -81,15 +142,13 @@
                                             @endcan
                                         </form>
                                     </div>
-                                </div>
+                                </div>--}}
                             </div>
                         </div>
 
 
 
-
-
-                        {{--<table class="table">
+                        <table class="table">
                             <thead class="thead-light">
                             <tr>
                                 <th>ID</th>
@@ -110,8 +169,10 @@
                             </tbody>
                         </table>
                         <div class="d-flex justify-content-center">
-                            {{ $questions->links() }}
-                        </div>--}}
+                            {{--                        {{ $questions->links() }}--}}
+                        </div>
+
+
                     @else
                         <p>Question has no answers</p>
                     @endif

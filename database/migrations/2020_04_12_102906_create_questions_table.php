@@ -19,6 +19,7 @@ class CreateQuestionsTable extends Migration
             $table->text('text');
             $table->unsignedBigInteger('user_id');
             $table->unsignedInteger('status_id');
+            $table->string('note')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

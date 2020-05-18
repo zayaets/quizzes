@@ -8,9 +8,11 @@
         <div class="row justify-content-center">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-center">
+                    @includeIf('templates.session_messages')
+
+                    {{--<div class="card-header d-flex justify-content-center">
                         <h1>Users</h1>
-                    </div>
+                    </div>--}}
                     <div class="card-body">
                         @if(session('message')['status'] === 'error')
                             <div class="alert alert-danger">

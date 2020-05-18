@@ -46,7 +46,7 @@ class HomeController extends Controller
 
     public function question(Question $question)
     {
-        $this->authorize('access-dashboard-question', $question);
+        $this->authorize('view-dashboard-question', $question);
 
         return view('user.question', [
             'question' => $question,

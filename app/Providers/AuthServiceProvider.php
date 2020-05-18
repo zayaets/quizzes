@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Answer;
-use App\Policies\AnswerPolicy;
 use App\Policies\QuestionPolicy;
 use App\Question;
 use App\User;
@@ -23,6 +22,10 @@ class AuthServiceProvider extends ServiceProvider
 //        Answer::class => AnswerPolicy::class,
     ];
 
+    private $allowed_statuses = [
+        'draft', 'rejected',
+    ];
+
     /**
      * Register any authentication / authorization services.
      *
@@ -39,8 +42,21 @@ class AuthServiceProvider extends ServiceProvider
 
     public function registerQuestionPolicies()
     {
-        Gate::define('access-dashboard-question', function ($user, Question $question) {
+
+        // User can view one Question if he is an owner, because there are right Answers displayed
+        Gate::define('view-dashboard-question', function ($user, Question $question) {
             return $user->id === $question->user_id;
+        });
+
+        Gate::define('publish', function ($user, Question $question) {
+            return $user->id === $question->user_id
+                && $question->isValid()
+                && in_array($question->status->slug, $this->allowed_statuses);
+        });
+
+        Gate::define('unpublish', function ($user, Question $question) {
+            return $user->id === $question->user_id
+                && $question->status->slug === 'published';
         });
 
         Gate::define('answer', function ($user, Question $question) {
@@ -50,7 +66,6 @@ class AuthServiceProvider extends ServiceProvider
 
     public function registerAnswerPolicies()
     {
-
 
         Gate::define('view-answers', function ($user, Question $question) {
 //            return true;
@@ -62,14 +77,16 @@ class AuthServiceProvider extends ServiceProvider
 //            return $user->hasAccess(['create-answers']);
             return $question->user_id === $user->id
                 && $user->hasAccess(['create-answers'])
-                && !$question->hasBeenAnswered();
+                && !$question->hasBeenAnswered()
+                && in_array($question->status->slug, $this->allowed_statuses);
         });
 
         Gate::define('update-answers', function ($user, Question $question, Answer $answer) {
             return $user->hasAccess(['update-answers'])
                 && $answer->question->user_id === $user->id
                 && !$answer->answeredByAnyExists
-                && $question->id === $answer->question_id;
+                && $question->id === $answer->question_id
+                && in_array($question->status->slug, $this->allowed_statuses);
         });
 
 
@@ -77,7 +94,8 @@ class AuthServiceProvider extends ServiceProvider
             return $user->hasAccess(['delete-answers'])
                 && $answer->question->user_id === $user->id
                 && !$answer->answeredByAnyExists
-                && $question->id === $answer->question_id;
+                && $question->id === $answer->question_id
+                && in_array($question->status->slug, $this->allowed_statuses);
         });
 
 

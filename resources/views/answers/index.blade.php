@@ -24,7 +24,7 @@
                            class="btn btn-primary mb-3"
                            data-toggle="tooltip" title="Create answer"><i class="fas fa-plus"></i></a>
 
-                        <a href="{{ route('user.questions') }}" class="btn btn-primary mb-3 ml-auto">Dashboard</a>
+                        <a href="{{ route('user.questions') }}" class="btn btn-primary mb-3 ml-auto">My Questions</a>
                     </div>
                 </div>
 

@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Kyslik\ColumnSortable\Sortable;
 
 class User extends Authenticatable
@@ -57,7 +58,7 @@ class User extends Authenticatable
     }
 
     /**
-     * This method will return all answered Answers
+     * This method will return ONLY answered Answers
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function answeredAnswers()
@@ -83,67 +84,108 @@ class User extends Authenticatable
         return $this->roles()->where('slug', $roleSlug)->count() == 1;
     }
 
+    /**
+     *
+     * STATISTICS FOR CURRENT USER
+     *
+     */
 
-    public function hello()
+    public function stat(array $params = [])
     {
-        return "hello $this->name";
+        foreach ($params as $param) {
+            $method = 'stat' . $param;
+            if (method_exists($this, $method)) {
+                 return $this->$method();
+            }
+        }
     }
-
-    public function isAdmin()
-    {
-        return true;
-    }
-
 
     /**
-     * get asnwered question's ids
+     * How many Questions has User created and published
      *
-     * @param $query
-     * @return array
+     * @return int
      */
-    /*public function scopeAnsweredQuestions($query)
+    private function statCreatedQuestions() : int
     {
-        $user = $query->with('answered')->where('id', auth()->id())->first();
+        return Question::with(['status' => function ($q) {
+            $q->where('slug', 'published');
+        }])->where('user_id', auth()->id())
+            ->count();
+    }
 
-        $answered_questions = [];
-
-        if (isset($user)) {
-            foreach ($user->answered as $answer) {
-//            echo $answer->answeredBy;
-                $id = $answer->question_id;
-                if (!in_array($id, $answered_questions)) {
-                    $answered_questions[] = $id;
-                }
+    /**
+     * Count Question answered by User
+     *
+     * @return int
+     */
+    private function statAnsweredQuestions() : int
+    {
+        $questions = Question::othersQuestions()->get();
+        $count_answered = 0;
+        foreach ($questions as $question) {
+            if ($question->answered) {
+                $count_answered++;
             }
         }
 
-        return $answered_questions;
-    }*/
-
+        return $count_answered;
+    }
 
     /**
-     * get what user answered
+     * New Users for today
      *
-     * @param $query
-     * @return array
+     * @return int
      */
-    /*public function scopeAnsweredData($query)
+    private function statTodayNewUsers() : int
     {
-        $question_ids = User::answeredQuestions();
+        return $this->whereDate('created_at', Carbon::today())->count();
+    }
 
-        $userAnswered = $query->with('answered')->where('id', auth()->id())->first();
+    /**
+     * New Users for last week
+     *
+     * @return int
+     */
+    private function statLastWeekNewUsers() : int
+    {
+        return $this->whereDate('created_at', '>', Carbon::now()->subWeek())->count();
+    }
 
-        $questions = [];
+    /**
+     * New Users for last month
+     *
+     * @return int
+     */
+    private function statLastMonthNewUsers() : int
+    {
+        return $this->whereDate('created_at', '>', Carbon::now()->subMonth())->count();
+    }
 
-        foreach ($question_ids as $id) {
-            foreach ($userAnswered->answered as $answer) {
-                if ($id === $answer->question_id) {
-                    $questions[$id][$answer->id] = $answer->pivot->answered;
-                }
-            }
-        }
+    /**
+     *
+     * COMMON STATISTICS
+     *
+     */
 
-        return $questions;
-    }*/
+    /**
+     * Total published Questions
+     *
+     * @return int
+     */
+    private function statTotalQuestions() : int
+    {
+        $status = Status::where('slug', 'published')->first();
+        return Question::where('status_id', $status->id)->count();
+    }
+
+    /**
+     * Count all of the Users of the app
+     *
+     * @return int
+     */
+    private function statCountUsers() : int
+    {
+        return $this->all()->count();
+    }
 
 }

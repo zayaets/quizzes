@@ -7,6 +7,7 @@ use App\Http\Requests\StoreQuestion as StoreQuestionRequest;
 use App\Http\Requests\UpdateQuestion as UpdateQuestionRequest;
 use App\Question;
 use App\Role;
+use App\Status;
 use App\User;
 use DebugBar\DebugBar;
 use Illuminate\Http\Request;
@@ -33,7 +34,11 @@ class QuestionController extends Controller
     public function index()
     {
 //        $questions = Question::ownQuestions()->get(); // ->paginate(1)
-        $questions = Question::othersQuestions()->published()->sortable()->paginate(10);
+
+        // todo statuses
+//        $questions = Question::othersQuestions()->published()->sortable()->paginate(10);
+        $questions = Question::othersQuestions()->sortable()->paginate(10);
+
 //        $answered_questions = User::answeredQuestions();
 //        dd($questions);
 
@@ -73,6 +78,8 @@ class QuestionController extends Controller
 
         $question = new Question;
         $question->fill($data);
+        $question->status()->associate(Status::statusBySlug('draft'));
+
 //        $question->title = $data['title'];
 //        $question->text = $data['text'];
         $question->owner()->associate(auth()->id());
@@ -132,6 +139,13 @@ class QuestionController extends Controller
 //        dd($data);
         $submit = $data['submit'];
         unset($data['submit']);
+
+        // if it's 'rejected' change it to 'draft'
+        if ($question->status->slug === 'rejected') {
+            $status = Status::where('slug', 'draft')->first();
+            $question->status()->associate($status);
+        }
+
         $question->fill($data);
 //        $question->title = $data['title'];
 //        $question->text = $data['text'];
@@ -161,8 +175,31 @@ class QuestionController extends Controller
         return back()->with('success-message', 'Question "' . $title . '" successfully deleted!');
     }
 
+    // User's publish button
+    public function publish(Question $question)
+    {
+        if ($question->isValid() && $question->status->slug === 'draft') {
+            $awaiting_approval = Status::statusBySlug('awaiting_approval');
+            $question->status()->associate($awaiting_approval);
+            $question->save();
+            return back()->with('success-message', 'Question is awaiting Admin approval, after approval it will be published!');
+        }
 
+        return back()->with('error-message', 'Question is invalid for publishing. It has to contain at least 2 Answers and at least 1 Answer is correct');
+    }
 
+    // User's unpublish button
+    public function unpublish(Question $question)
+    {
+        if ($question->status->slug === 'published') {
+            $status = Status::where('slug', 'draft')->first();
+            $question->status()->associate($status);
+            $question->save();
+            return back()->with('success-message', 'The Question has changed to "' . ucfirst($status->slug) . '"');
+        }
+
+        return back();
+    }
 
 
 }

@@ -31,5 +31,24 @@ const app = new Vue({
     el: '#app',
     mounted: function() {
         $('[data-toggle="tooltip"]').tooltip();
+        // $('[data-toggle="popover"]').popover();
+
+        /*$('#popover1').popover({
+            html : true,
+            title: function() {
+                return $("#popover-head").html();
+            },
+            content: function() {
+                return $("#popover-content").html();
+            }
+        });*/
+
+        /*$(document).ready(function () {
+
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+
+        });*/
     }
 });

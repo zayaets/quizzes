@@ -1,0 +1,22 @@
+img {
+    display: block;
+    max-width: 200px;
+    margin: 20px auto 10px;
+
+    /*max-height: 20%;*/
+}
+
+.row-flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+[class*="col-"] {
+    margin-bottom: 30px;
+}
+
+.card {
+    height: 100%;
+    padding: 20px 20px 10px;
+    color: #fff;
+}

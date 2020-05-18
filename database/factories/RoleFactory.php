@@ -19,7 +19,9 @@ $factory->state(Role::class, 'user', function (Faker $faker) {
            'create-question' => true,
            'create-answers' => true,
            'update-question' => true,
-           'update-answers' => true
+           'update-answers' => true,
+           'delete-question' => true,
+           'delete-answers' => true,
        ]
    ];
 });

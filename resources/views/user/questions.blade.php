@@ -31,6 +31,7 @@
                                         <th>@sortablelink('text', 'Text')</th>
 {{--                                        <th>@sortablelink('user_id', 'User ID')</th>--}}
                                         <th>@sortablelink('owner.name', 'User')</th>
+                                        <th>@sortablelink('status.title', 'Status')</th>
                                         <th>@sortablelink('created_at', 'Created')</th>
                                         <th></th>
                                     </tr>
@@ -43,6 +44,7 @@
                                             <td>{{ \Illuminate\Support\Str::limit($question->text, 50, '(...)') }}</td>
 {{--                                            <td>{{ $question->user_id }}</td>--}}
                                             <td>{{ $question->owner->name }}</td>
+                                            <td>{{ $question->status->title }}</td>
                                             <td>{{ $question->created_at }}</td>
                                             <td>
                                                 <div class="d-flex justify-content-around">
@@ -53,12 +55,33 @@
 
                                                     @can('delete', $question)
                                                         <form action="{{ route('questions.destroy', ['question' => $question->id]) }}" method="post">
-                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                            <input type="hidden" name="_method" value="delete">
+                                                            @csrf
+                                                            @method('DELETE')
                                                             <button type="submit" class="btn btn-danger"
                                                                     data-toggle="tooltip" title="Delete question"><i class="fas fa-trash-alt"></i></button>
                                                         </form>
                                                     @endcan
+
+                                                    @can('unpublish', $question)
+                                                            <form action="{{ route('questions.unpublish', ['question' => $question->id]) }}" method="post">
+                                                                @csrf
+                                                                <button type="submit" class="btn btn-secondary"
+                                                                        data-toggle="tooltip" title="Unpublish"><i class="fas fa-file-prescription"></i></button>
+                                                            </form>
+                                                    @endcan
+
+                                                    @can('publish', $question)
+                                                        <form action="{{ route('questions.publish', ['question' => $question->id]) }}" method="post">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-success"
+                                                                    data-toggle="tooltip" title="Publish"><i class="fas fa-file-powerpoint"></i></button>
+                                                        </form>
+                                                    @endcan
+
+
+
+                                                    {{--<button class="btn btn-primary"><i class="fas fa-file-prescription"></i><i class="fas fa-file-powerpoint"></i></button>--}}
+
                                                 </div>
                                             </td>
                                         </tr>
